@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "tap"
+    "test": "tap --bail -R spec"
   },
   "license": "MIT",
   "devDependencies": {
