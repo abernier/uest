@@ -1,7 +1,8 @@
 
 const {promisify} = require('util');
 const defaults = require('lodash.defaults');
-//const extend = require('lodash.assignin');
+
+const request = require('request');
 
 /*
 const uest = require('uest')
@@ -45,19 +46,19 @@ app.get('/login', (req, res, next) => {
 module.exports = function (settings={}) {
   return function (req, res, next) {
     const baseUrl = `${req.protocol}://${req.get('Host')}`; // http://localhost:3000
+    // console.log('baseUrl=', baseUrl)
 
     //
     // A jar of cookies for subsequent requests (subsequent to initial req request)
     //
 
-    const jar = require('request').jar();
+    const jar = request.jar();
 
-    // Initially filled with req cookies
-    const cookies = req.headers && req.headers.cookie && req.headers.cookie.split('; ');
+    const cookies = req.headers && req.headers.cookie && req.headers.cookie.split(/\s*;\s*/);
+    //console.log('req.headers.cookie', cookies);
     if (cookies && cookies.length) {
       cookies.forEach(function (cookieStr) {
         //console.log('putting cookie "%s" into jar', cookieStr);
-
         jar.setCookie(cookieStr, baseUrl);
       });
     }
@@ -67,71 +68,94 @@ module.exports = function (settings={}) {
     //
     //
 
-    defaults(settings, {
-      baseUrl,
-      json: true,
-      jar,
-      headers: {"X-Requested-With": "req.uest"}
-    });
-    const request = require('request').defaults(settings);
-
     function uest(options, cb) {
+      defaults(options, {
+        baseUrl,
+        json: true,
+        jar: jar,
+        headers: {"X-Requested-With": "req.uest"}
+      })
+      // console.log('options=', options)
+
       // if (options.method !== 'HEAD') {
       //   options.body = extend({}, req.params, req.body, req.query, options.body);
       // }
 
       //
-      // Make the request
+      // 1. Persist session before req.uest (that way, the next request will have up-to-date req.session)
       //
 
-      //console.log('req.uest options', JSON.stringify(options, null, 4));
-      request(options, function (er, resp, data) {
-        //
-        // Normalize error
-        //
-        if (er || resp && resp.statusCode >= 400 || data && data.error) {
-          const message = data && data.message || resp && resp.statusMessage;
-          const status = data && data.status || resp && resp.statusCode;
-          const error = data && data.error;
-          const stack = data && data.stack;
+      if (req.session && req.session.id && req.session.save) {
+        req.session.save(err => {
+          if (err) {
+            console.log('Error while saving session', err);
+            //return cb(err);
+          }
 
-          //console.log('uest cb', require('util').inspect(data));
-          er || (er = new Error(message));
-          er.status || (er.status = status);
-          er.error || (er.error = error);
-          er.stack || (er.stack = stack);
-        }
-
-        //
-        // Copy/forward cookies set by req.uest to res (append)
-        //
-
-        resp && resp.headers && resp.headers['set-cookie'] && resp.headers['set-cookie'].forEach(function (cookie, index) {
-          res.cookie(cookie);
+          thenSessionSaved()
         });
+      } else {
+        thenSessionSaved()
+      }
 
+      function thenSessionSaved() {
         //
-        // Reload req.session (from session-store) since our last req.uest might have modified it (and req.session is not up-to-date)
+        // 2. Make the request
         //
 
-        if (req.session && req.session.id && req.session.reload) {
-          //console.log('Reloading session of id %s', req.session.id);
+        //console.log('req.uest options', JSON.stringify(options, null, 4));
+        request(options, function (er, resp, data) {
+          //
+          // Normalize error
+          //
+          if (er || resp && resp.statusCode >= 400 || data && data.error) {
+            const message = data && data.message || resp && resp.statusMessage;
+            const status = data && data.status || resp && resp.statusCode;
+            const error = data && data.error;
+            const stack = data && data.stack;
 
-          req.session.reload(function (err) {
-            if (err) return cb(err);
-            //console.log('Session reloaded %s', req.session.id, JSON.stringify(req.session, null, 4));
+            //console.log('uest cb', require('util').inspect(data));
+            er || (er = new Error(message));
+            er.status || (er.status = status);
+            er.error || (er.error = error);
+            er.stack || (er.stack = stack);
+          }
 
-            thenSessionReloaded();
+          //
+          // 3.1 Copy/forward cookies set by req.uest to res (append)
+          //
+
+          resp && resp.headers && resp.headers['set-cookie'] && resp.headers['set-cookie'].forEach(function (cookie, index) {
+            res.cookie(cookie);
           });
-        } else {
-          thenSessionReloaded();
-        }
 
-        function thenSessionReloaded() {
-          cb(er, resp, data);
-        }
+          //
+          // 3.2 Reload req.session (from session-store) since our last req.uest might have modified it (and req.session is not up-to-date)
+          //
 
-      });
+          if (req.session && req.session.id && req.session.reload) {
+            // console.log('Reloading session of id %s', req.session.id);
+            req.session.reload(function (err) {
+              if (err) {
+                console.log('Error while reloading session', err);
+              }
+
+              thenSessionReloaded();
+            });
+            
+          } else {
+            thenSessionReloaded();
+          }
+
+          function thenSessionReloaded() {
+            // console.log('SESSION AFTER RELOAD=', req.session);
+
+            cb(er, resp, data);
+          }
+
+        });
+      }
+      
     }
 
     // Decorate req

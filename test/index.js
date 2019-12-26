@@ -1,13 +1,25 @@
 const tap = require('tap');
-const express = require('express');
 const request = require('request');
+
+const express = require('express');
+const session = require('express-session');
 
 const uest = require('../src/index.js');
 
 let app;
 
+const HOST = 'http://localhost:3033';
+
+// ######  ######## ######## ##     ## ########  
+// ##    ## ##          ##    ##     ## ##     ## 
+// ##       ##          ##    ##     ## ##     ## 
+//  ######  ######      ##    ##     ## ########  
+//       ## ##          ##    ##     ## ##        
+// ##    ## ##          ##    ##     ## ##        
+//  ######  ########    ##     #######  ##        
+
 tap.beforeEach(function (done) {
-  console.log('beforeEach')
+  // console.log('beforeEach')
 
   //
   // Create an express `app`
@@ -15,7 +27,9 @@ tap.beforeEach(function (done) {
 
 	app = express();
   app.start = function (cb) {
-    app.server = app.listen(3000, er => {
+    const {port} = require('url').parse(HOST);
+
+    app.server = app.listen(port, er => {
       if (er) return cb(er);
       cb(null);
     });
@@ -26,6 +40,10 @@ tap.beforeEach(function (done) {
       cb(null)
     });
   };
+
+  app.use(session({
+    secret: "shhhhht"
+  }));
 
   // use our middleware
   app.use(uest());
@@ -39,14 +57,14 @@ tap.beforeEach(function (done) {
 })
 
 tap.afterEach(function (done) {
-  console.log('afterEach')
+  // console.log('afterEach')
 
   //
   // Stop the server
   //
 
 	app.stop(function (er) {
-    console.log('app.stop callback')
+    // console.log('app.stop callback')
 		if (er) return done(er);
 
     // clear our `app`
@@ -55,9 +73,18 @@ tap.afterEach(function (done) {
 	})
 })
 
+// ######   #######   #######  ##    ## #### ########  ######  
+// ##    ## ##     ## ##     ## ##   ##   ##  ##       ##    ## 
+// ##       ##     ## ##     ## ##  ##    ##  ##       ##       
+// ##       ##     ## ##     ## #####     ##  ######    ######  
+// ##       ##     ## ##     ## ##  ##    ##  ##             ## 
+// ##    ## ##     ## ##     ## ##   ##   ##  ##       ##    ## 
+//  ######   #######   #######  ##    ## #### ########  ######  
 
 tap.test('cookies', function (t) {
-  const domain = 'http://localhost:3000';
+  t.plan(2)
+
+  const domain = HOST;
 
   var jar = request.jar();
   var cookie1 = request.cookie('totocook1=toto1'); // initial cookie 1
@@ -66,7 +93,9 @@ tap.test('cookies', function (t) {
   jar.setCookie(cookie2, domain);
 
   app.get('/app-toto', function (req, res, next) {
-    console.log('/app-toto');
+    //console.log('/app-toto');
+
+    req.session.toto = 'toto';
 
     // subrequest /app-tata
     req.uest({
@@ -74,9 +103,6 @@ tap.test('cookies', function (t) {
       uri: '/app-tata'
     })
       .then((resp, data) => {
-        t.ok(201 === resp.statusCode, '/app-tata returns a 201');
-        t.ok(JSON.toString({yes: 'oktata'}) === JSON.toString(data), '/app-tata returns expected json value');
-
         var cookiesStr = res.get('set-cookie').toString();
         t.ok((
           cookiesStr.includes('tatacook1')
@@ -84,10 +110,7 @@ tap.test('cookies', function (t) {
           cookiesStr.includes('tatacook2')
         ), 'Cookies set in the subsequent request /app-tata should have been passed to res');
 
-        res.status(200).send('oktoto')
-      })
-      .catch(er => {
-        // should not pass by here
+        res.send()
       })
     ;
   })
@@ -103,20 +126,76 @@ tap.test('cookies', function (t) {
     res.cookie('tatacook1', 'tata1')
     res.cookie('tatacook2', 'tata2')
 
-    res.status(201).json({yes: 'oktata'})
+    res.send()
   })
 
   request({
     method: 'GET',
-    uri: 'http://localhost:3000/app-toto',
+    uri: `${HOST}/app-toto`,
     jar: jar
   }, function (er, resp, data) {
-    t.error(er, 'response should not be an error', er)
-    
-    t.ok(200 === resp.statusCode, '/app-toto returns a 200');
-    t.ok('oktoto' === data, '/app-toto returns the expected value');
-
     t.end()
   });
 });
 
+// ######  ########  ######   ######  ####  #######  ##    ## 
+// ##    ## ##       ##    ## ##    ##  ##  ##     ## ###   ## 
+// ##       ##       ##       ##        ##  ##     ## ####  ## 
+//  ######  ######    ######   ######   ##  ##     ## ## ## ## 
+//       ## ##             ##       ##  ##  ##     ## ##  #### 
+// ##    ## ##       ##    ## ##    ##  ##  ##     ## ##   ### 
+//  ######  ########  ######   ######  ####  #######  ##    ## 
+
+tap.test('session', function (t) {
+  t.plan(3);
+
+  app.get('/testsession0', function (req, res, next) {
+    // console.log('/testsession0', req.headers.cookie);
+
+    req.session.foo = 'FOO';
+
+    res.send();
+  })
+
+  app.get('/testsession1', function (req, res, next) {
+    // console.log('/testsession1', req.headers.cookie)
+
+    req.session.bar = 'BAR';
+
+    // subrequest
+    req.uest({
+      method: 'POST',
+      uri: '/testsession2'
+    }, (er, resp, data) => {
+      t.ok(req.session.foo === 'FOO', 'session values set before this request are preserved');
+      t.ok(req.session.bar === 'BAR', 'session values set in this request are preserved');
+      t.ok(req.session.baz === 'BAZ', 'session values set in req.uest are persisted here');
+
+      res.send();
+    })
+  })
+  app.post('/testsession2', function (req, res, next) {
+    // console.log('/testsession2', req.headers.cookie)
+
+    req.session.baz = 'BAZ';
+
+    res.send();
+  })
+
+  var jar = request.jar();
+
+  request({
+    method: 'GET',
+    uri: `${HOST}/testsession0`,
+    jar
+  }, function (er, resp, data) {
+    request({
+      method: 'GET',
+      uri: `${HOST}/testsession1`,
+      jar
+    }, function (er, resp, data) {
+      t.end()
+    });
+  });
+  
+});

@@ -37,7 +37,7 @@ TODO: schema clients <-> API
 
 - 🍪 jar: incoming cookies (from `req`) are passed for subsequent `req.uest`s
 - cookies forwarding: cookies set by `req.uest`s responses are forwarded to `res`
-- req.session reloading (cf. L.15)
+- `req.session` stay in sync between requests
 
 ## Install
 
@@ -55,23 +55,10 @@ app.use(uest());
 Syntax is:
 
 ```
-uest( [name='uest'], [defaults={}] )
+req.uest(options)
+  .then((resp, data))
+  .catch(err)
 ```
 
-NB: `uest` can receive any request.defaults
-NB : `uest()` can decorate req in the way you like :
-
-```js
-app.use(uest('api1', {
-  baseUrl: 'http://localhost:3000/api/1.0'
-}));
-
-app.use(uest('api2', {
-  baseUrl: 'http://localhost:3000/api/2.0'
-}));
-
-...
-
-req.api1({...})
-req.api2({...})
-```
+- `options` are the same as [request/request](https://github.com/request/request#requestoptions-callback)
+- `catch` is triggered when an error occurs or `resp.statusCode >= 400`
