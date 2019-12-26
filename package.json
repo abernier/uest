@@ -1,6 +1,6 @@
 {
   "name": "uest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "test": "tap --bail -R spec"
@@ -9,10 +9,15 @@
   "devDependencies": {
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "lodash.defaults": "^4.2.0",
     "tap": "^14.10.5"
   },
   "dependencies": {
+    "lodash.defaults": "^4.2.0",
     "request": "^2.88.0"
-  }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/abernier/uest.git"
+  },
+  "author": "Antoine BERNIER <antoine.bernier@gmail.com> (http://abernier.name)"
 }

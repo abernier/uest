@@ -4,45 +4,6 @@ const defaults = require('lodash.defaults');
 
 const request = require('request');
 
-/*
-const uest = require('uest')
-app.use(uest({
-  baseUrl: 'http://localhost:3000'
-}))
-
-...
-
-app.post('/api/sessions', (req, res, next) => {
-  const {username, password} = req.body;
-
-  User.findOne({username})
-    .then(user => {
-      if (!user || !bcrypt.compareSync(password, user.password)) {
-        const err = new Error(); err.status = 403;
-        return next(err);
-      }
-
-      req.session.user = user; // Save the user in the session!
-      res.json(user);
-    })
-    .catch(next)
-  ;
-})
-
-app.get('/login', (req, res, next) => {
-  req.uest({
-    method: 'POST'
-    url: '/api/sessions',
-    body: {
-      username: 'abernier'
-      password: 'blacky123'
-    }
-  }).then((resp, data) => {
-    res.send(`Welcome back ${req.session.user.username}!`)
-  }).catch(next)
-})
-*/
-
 module.exports = function (settings={}) {
   return function (req, res, next) {
     const baseUrl = `${req.protocol}://${req.get('Host')}`; // http://localhost:3000
@@ -161,7 +122,6 @@ module.exports = function (settings={}) {
     // Decorate req
     // req.uest = uest;
     req.uest = promisify(uest);
-    
 
     next();
   };
