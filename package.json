@@ -1,0 +1,17 @@
+{
+  "name": "uest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "tap"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.17.1",
+    "lodash.defaults": "^4.2.0",
+    "tap": "^14.10.5"
+  },
+  "dependencies": {
+    "request": "^2.88.0"
+  }
+}
