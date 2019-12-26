@@ -84,50 +84,50 @@ tap.afterEach(function (done) {
 tap.test('cookies', function (t) {
   t.plan(2)
 
-  const domain = HOST;
-
-  var jar = request.jar();
-  var cookie1 = request.cookie('totocook1=toto1'); // initial cookie 1
-  var cookie2 = request.cookie('totocook2=toto2'); // initial cookie 2
-  jar.setCookie(cookie1, domain);
-  jar.setCookie(cookie2, domain);
-
   app.get('/app-toto', function (req, res, next) {
     //console.log('/app-toto');
 
-    req.session.toto = 'toto';
-
-    // subrequest /app-tata
+    // subrequest
     req.uest({
       method: 'POST',
       uri: '/app-tata'
     })
       .then((resp, data) => {
-        var cookiesStr = res.get('set-cookie').toString();
-        t.ok((
-          cookiesStr.includes('tatacook1')
-          &&
-          cookiesStr.includes('tatacook2')
-        ), 'Cookies set in the subsequent request /app-tata should have been passed to res');
+        const cookiesStr = res.get('set-cookie').toString();
+        t.ok(
+          cookiesStr.includes('tatacook1') && cookiesStr.includes('tatacook2'),
+          'Cookies set in the subsequent request /app-tata should have been passed to res'
+        );
 
         res.send()
       })
     ;
   })
-  app.post('/app-tata', function (req, res, next) {
-    var cookiesStr = req.get('cookie').toString(); // "totocook1=toto1; totocook2=toto2"
 
-    t.ok((
-      cookiesStr.includes('totocook1=toto1')
-      &&
-      cookiesStr.includes('totocook2=toto2')
-    ), 'Cookies initially present in /app-toto should have been passed')
+  app.post('/app-tata', function (req, res, next) {
+    const cookiesStr = req.get('cookie').toString(); // "totocook1=toto1; totocook2=toto2"
+    t.ok(
+      cookiesStr.includes('totocook1=toto1') && cookiesStr.includes('totocook2=toto2'),
+      'Cookies initially present in /app-toto should have been passed'
+    );
 
     res.cookie('tatacook1', 'tata1')
     res.cookie('tatacook2', 'tata2')
 
     res.send()
   })
+
+  //
+  // do initial request
+  //
+
+  const domain = HOST;
+
+  const jar = request.jar();
+  const cookie1 = request.cookie('totocook1=toto1'); // initial cookie 1
+  const cookie2 = request.cookie('totocook2=toto2'); // initial cookie 2
+  jar.setCookie(cookie1, domain);
+  jar.setCookie(cookie2, domain);
 
   request({
     method: 'GET',
@@ -196,7 +196,7 @@ tap.test('session', function (t) {
     res.send();
   })
 
-  var jar = request.jar();
+  const jar = request.jar();
 
   request({
     method: 'GET',

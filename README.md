@@ -71,6 +71,6 @@ app.post('/login', (req, res, next) => {
 
 ## Advantages
 
-It allows you to decouple your app's routes from your API,s ones. IOW, your app routes can now consume your API as any client.
+It allows you to decouple your app's routes from your API's ones. IOW, your app routes can now consume your API as any client.
 
 TODO: schema clients <-> API
