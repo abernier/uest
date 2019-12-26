@@ -10,8 +10,14 @@ $ npm install uest
 ```
 
 ```js
+// app.js
+
+const express = express()
 const uest = require('uest')
-app.use(uest());
+
+const app = express();
+
+app.use(uest())
 ```
 
 ## Usage
@@ -44,6 +50,9 @@ app.post('/login', (req, res, next) => {
     body: {username, password}
   })
     .then((resp, data) => {
+      // data holds json response
+      // req.session is up-to-date
+
       console.log(`Welcome back ${req.session.user.firstname}!`;
       res.redirect('/profile');
     })
