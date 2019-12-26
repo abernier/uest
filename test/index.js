@@ -4,20 +4,6 @@ const request = require('request');
 
 const uest = require('../src/index.js');
 
-function reqq(options, cb) {  
-  return request(options, function (er, resp, data) {
-    // Normalize error
-    if (er || resp && resp.statusCode >= 400 || data && data.error) {
-      er || (er = new Error(data && data.message || resp && resp.statusMessage));
-      er.status || (er.status = data && data.status || resp && resp.statusCode);
-      er.error || (er.error = data && data.error);
-      er.stack || (er.stack = data && data.stack);
-    }
-    
-    cb(er, resp, data);
-  });
-}
-
 let app;
 
 tap.beforeEach(function (done) {
@@ -120,7 +106,7 @@ tap.test('cookies', function (t) {
     res.status(201).json({yes: 'oktata'})
   })
 
-  reqq({
+  request({
     method: 'GET',
     uri: 'http://localhost:3000/app-toto',
     jar: jar
