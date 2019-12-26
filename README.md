@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/abernier/uest.svg?branch=master)](https://travis-ci.org/abernier/uest)
+
 `req.uest` is an Express middleware that allows you to request another route within a route :
 
 ```js
