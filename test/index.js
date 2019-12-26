@@ -147,7 +147,7 @@ tap.test('cookies', function (t) {
 //  ######  ########  ######   ######  ####  #######  ##    ## 
 
 tap.test('session', function (t) {
-  t.plan(3);
+  t.plan(4);
 
   app.get('/testsession0', function (req, res, next) {
     // console.log('/testsession0', req.headers.cookie);
@@ -167,17 +167,31 @@ tap.test('session', function (t) {
       method: 'POST',
       uri: '/testsession2'
     }, (er, resp, data) => {
-      t.ok(req.session.foo === 'FOO', 'session values set before this request are preserved');
-      t.ok(req.session.bar === 'BAR', 'session values set in this request are preserved');
-      t.ok(req.session.baz === 'BAZ', 'session values set in req.uest are persisted here');
+      // subrequest
+      req.uest({
+        method: 'POST',
+        uri: '/testsession3'
+      }, (er, resp, data) => {
+        t.ok(req.session.foo === 'FOO', 'session values set before this request are preserved');
+        t.ok(req.session.bar === 'BAR', 'session values set in this request are preserved');
+        t.ok(req.session.baz === 'BAZ', 'session values set in req.uest are persisted here');
+        t.ok(req.session.bang === 'BANG', 'session values set in nested req.uest are also persisted here');
 
-      res.send();
+        res.send();
+      })
     })
   })
   app.post('/testsession2', function (req, res, next) {
     // console.log('/testsession2', req.headers.cookie)
 
     req.session.baz = 'BAZ';
+
+    res.send();
+  })
+  app.post('/testsession3', function (req, res, next) {
+    // console.log('/testsession3', req.headers.cookie)
+
+    req.session.bang = 'BANG';
 
     res.send();
   })
