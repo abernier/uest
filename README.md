@@ -5,11 +5,11 @@
 ## Install
 
 ```
-$ npm install req.uest
+$ npm install uest
 ```
 
 ```js
-const uest = require('req.uest')
+const uest = require('uest')
 app.use(uest());
 ```
 
