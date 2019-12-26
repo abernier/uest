@@ -24,7 +24,7 @@ req.uest(options)
   .catch(err)
 ```
 
-- `options` are the same as [request/request](https://github.com/request/request#requestoptions-callback)
+- `options` are the same as [request/request](https://github.com/request/request#requestoptions-callback), with defaults to `json: true` and `baseUrl` to the same as your Express server.
 - `catch` is triggered when an error occurs or `resp.statusCode >= 400`
 
 ## Example
@@ -40,7 +40,7 @@ app.use('/api', require('./routers/api'));
 app.post('/login', (req, res, next) => {
   req.uest({
     method: 'POST',
-    url: /api/sessions,
+    url: '/api/sessions',
     body: {username, password}
   })
     .then((resp, data) => {
@@ -56,7 +56,7 @@ app.post('/login', (req, res, next) => {
 
 ## Features
 
-- 🍪 jar: incoming cookies (from `req`) are passed for subsequent `req.uest`s
+- 🍪 jar: incoming cookies (from `req`) are passed to subsequent `req.uest`s
 - cookies forwarding: cookies set by `req.uest`s responses are forwarded to `res`
 - `req.session` stay in sync between requests
 
