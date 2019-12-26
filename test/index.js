@@ -25,7 +25,7 @@ tap.beforeEach(function (done) {
   // Create an express `app`
   //
 
-	app = express();
+  app = express();
   app.start = function (cb) {
     const {port} = require('url').parse(HOST);
 
