@@ -50,13 +50,18 @@ const uest = require('req.uest')
 app.use(uest());
 ```
 
-uest( [name='uest'], [defaults={}] )
+## Usage
 
-NB: `uest` can receive any request.defaults
-
-NB : `uest()` can decorate req in the way you like :
+Syntax is:
 
 ```
+uest( [name='uest'], [defaults={}] )
+```
+
+NB: `uest` can receive any request.defaults
+NB : `uest()` can decorate req in the way you like :
+
+```js
 app.use(uest('api1', {
   baseUrl: 'http://localhost:3000/api/1.0'
 }));
@@ -64,6 +69,7 @@ app.use(uest('api1', {
 app.use(uest('api2', {
   baseUrl: 'http://localhost:3000/api/2.0'
 }));
+
 ...
 
 req.api1({...})
