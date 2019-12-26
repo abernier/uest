@@ -19,5 +19,10 @@
     "type" : "git",
     "url" : "https://github.com/abernier/uest.git"
   },
-  "author": "Antoine BERNIER <antoine.bernier@gmail.com> (http://abernier.name)"
+  "author": "Antoine BERNIER <antoine.bernier@gmail.com> (http://abernier.name)",
+  "keywords": [
+    "express",
+    "request",
+    "api"
+  ],
 }
