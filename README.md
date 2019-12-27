@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.org/abernier/uest.svg?branch=master)](https://travis-ci.org/abernier/uest)
 [![NPM version](https://img.shields.io/npm/v/uest.svg?style=flat)](https://www.npmjs.com/package/uest)
+![David](https://img.shields.io/david/abernier/uest)
 
-`req.uest` is an Express middleware that allows you to request another route within a route :
+`req.uest` is an Express middleware that allows you to request another route within a route.
 
 ## Install
 
