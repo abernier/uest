@@ -73,6 +73,31 @@ tap.afterEach(function (done) {
 	})
 })
 
+tap.test('general', t => {
+  t.plan(1)
+
+  app.get('/toto', (req, res, next) => {
+    req.uest(
+      {method: 'POST', url: '/tata'},
+      (er, resp, data) => {
+        t.ok(data.ok === 'tata', 'Error-first callback')
+        res.send()
+      }
+    )
+  })
+
+  app.post('/tata', (req, res, next) => {
+    res.json({ok: 'tata'})
+  })
+
+  request({
+    method: 'GET',
+    uri: `${HOST}/toto`
+  }, function (er, resp, data) {
+    t.end()
+  });
+})
+
 // ######   #######   #######  ##    ## #### ########  ######  
 // ##    ## ##     ## ##     ## ##   ##   ##  ##       ##    ## 
 // ##       ##     ## ##     ## ##  ##    ##  ##       ##       
