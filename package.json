@@ -1,6 +1,6 @@
 {
   "name": "uest",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "main": "src/index.js",
   "scripts": {
     "test": "tap --bail -R spec"
