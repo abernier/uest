@@ -87,8 +87,8 @@ tap.test('error-first callback', t => {
   app.get('/toto', (req, res, next) => {
     req.uest(
       {method: 'POST', url: '/tata'},
-      (er, resp, data) => {
-        t.ok(data.ok === 'tata', 'Error-first callback')
+      (er, resp, body) => {
+        t.ok(body.ok === 'tata', 'Error-first callback')
         res.send()
       }
     )
@@ -101,7 +101,53 @@ tap.test('error-first callback', t => {
   request({
     method: 'GET',
     uri: `${HOST}/toto`
-  }, function (er, resp, data) {
+  }, function (er, resp, body) {
+    t.end()
+  });
+})
+
+tap.test('Promise call', t => {
+  t.plan(1)
+
+  app.get('/toto', (req, res, next) => {
+    req.uest({method: 'POST', url: '/tata'})
+      .then(({body}) => {
+        t.ok(body.ok === 'tata', 'Promise call')
+        res.send()
+      })
+      .catch(next)
+  })
+
+  app.post('/tata', (req, res, next) => {
+    res.json({ok: 'tata'})
+  })
+
+  request({
+    method: 'GET',
+    uri: `${HOST}/toto`
+  }, function (er, resp, body) {
+    t.end()
+  });
+})
+
+tap.test('await call', t => {
+  t.plan(1)
+
+  app.get('/toto', async (req, res, next) => {
+    const resp = await req.uest({method: 'POST', url: '/tata'}).catch(next)
+
+    t.ok(resp.body.ok === 'tata', 'await call')
+    res.send()
+  })
+
+  app.post('/tata', (req, res, next) => {
+    res.json({ok: 'tata'})
+  })
+
+  request({
+    method: 'GET',
+    uri: `${HOST}/toto`
+  }, function (er, resp, body) {
     t.end()
   });
 })
@@ -118,8 +164,8 @@ tap.test('err when resp.statusCode > 400', t => {
 
     await req.uest({method: 'POST', url: '/tata2'}).catch(er => {
       t.ok(er instanceof Error, 'er should always be an error')
-      t.ok(er.message === 'Nope', 'er.message should be data.message')
-      t.ok(er.status === 501, 'er.status should be data.status')
+      t.ok(er.message === 'Nope', 'er.message should be body.message')
+      t.ok(er.status === 501, 'er.status should be body.status')
     })
 
     res.send()
@@ -137,7 +183,7 @@ tap.test('err when resp.statusCode > 400', t => {
   request({
     method: 'GET',
     uri: `${HOST}/toto`
-  }, function (er, resp, data) {
+  }, function (er, resp, body) {
     t.end()
   });
 })
@@ -161,7 +207,7 @@ tap.test('cookies', function (t) {
       method: 'POST',
       uri: '/app-tata'
     })
-      .then((resp, data) => {
+      .then((resp, body) => {
         const cookiesStr = res.get('set-cookie').toString();
         t.ok(
           cookiesStr.includes('tatacook1') && cookiesStr.includes('tatacook2'),
@@ -202,7 +248,7 @@ tap.test('cookies', function (t) {
     method: 'GET',
     uri: `${HOST}/app-toto`,
     jar: jar
-  }, function (er, resp, data) {
+  }, function (er, resp, body) {
     t.end()
   });
 });
@@ -235,12 +281,12 @@ tap.test('session', function (t) {
     req.uest({
       method: 'POST',
       uri: '/testsession2'
-    }, (er, resp, data) => {
+    }, (er, resp, body) => {
       // subrequest
       req.uest({
         method: 'POST',
         uri: '/testsession3'
-      }, (er, resp, data) => {
+      }, (er, resp, body) => {
         t.ok(req.session.foo === 'FOO', 'session values set before this request are preserved');
         t.ok(req.session.bar === 'BAR', 'session values set in this request are preserved');
         t.ok(req.session.baz === 'BAZ', 'session values set in req.uest are persisted here');
@@ -271,12 +317,12 @@ tap.test('session', function (t) {
     method: 'GET',
     uri: `${HOST}/testsession0`,
     jar
-  }, function (er, resp, data) {
+  }, function (er, resp, body) {
     request({
       method: 'GET',
       uri: `${HOST}/testsession1`,
       jar
-    }, function (er, resp, data) {
+    }, function (er, resp, body) {
       t.end()
     });
   });

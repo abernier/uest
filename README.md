@@ -5,6 +5,13 @@
 
 `req.uest` is an Express middleware that allows you, from a given route, to request another route.
 
+Features are:
+- Initial `req` cookies are passed along to subsequent `req.uest`s
+- Cookies set by `req.uest`s responses are forwarded to `res`
+- `req.session` stay in sync between requests
+
+It allows you to decouple your app's routes from your API's ones. IOW, your app routes can now consume your API as any client.
+
 ## Install
 
 ```
@@ -23,25 +30,27 @@ app.use(uest())
 
 ```js
 req.uest(options)
-  .then((resp, data) => {})
+  .then(resp => {})
   .catch(err => {})
 ```
 
 - `options` -- are the same as [request/request](https://github.com/request/request#requestoptions-callback), with defaults to `json: true` and `baseUrl` to the same as your Express server.
 - `resp` -- the response object, see: [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
-- `data` -- the JSON response body
 - `err` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
+
+NB: **`resp.body`** holds the JSON response datas
+NB: **`err.status`** holds the response statusCode, for example: `404` or `409`...
 
 You can also use it with `await`:
 
 ```js
-const [resp, data] = await req.uest(options).catch(err => {})
+const resp = await req.uest(options).catch(err => {})
 ```
 
 Or with plain-old [error-first callback](https://nodejs.org/api/errors.html#errors_error_first_callbacks):
 
 ```js
-req.uest(options, (err, resp, data) => {})
+req.uest(options, (err, resp, body) => {})
 ```
 
 ## Example
@@ -55,7 +64,7 @@ app.use('/api', require('./routers/api'));
 //
 
 app.post('/login', (req, res, next) => {
-  const {username, password} = req.body
+  const {email, password} = req.body
 
   //
   // Our subsequent request to `POST /api/sessions` route
@@ -64,11 +73,11 @@ app.post('/login', (req, res, next) => {
   req.uest({
     method: 'POST',
     url: '/api/sessions',
-    body: {username, password}
+    body: {email, password}
   })
-    .then((resp, data) => {
-      // `data` holds JSON response
-      console.log('User-session created for', data.user)
+    .then(resp => {
+      // `resp.body` holds JSON response
+      console.log('User-session created for', resp.body.user)
 
       // `req.session` is up-to-date
       console.log(`Welcome back ${req.session.user.firstname}!`
@@ -83,14 +92,32 @@ app.post('/login', (req, res, next) => {
 });
 ```
 
-## Features
+Or another example, with `await` elegance:
 
-- Initial `req` cookies are passed along to subsequent `req.uest`s
-- Cookies set by `req.uest`s responses are forwarded to `res`
-- `req.session` stay in sync between requests
+```js
+app.post('/signup', async (req, res, next) => {
+  const {email, password} = req.body
 
-## Advantages
+  // 1st subrequest: check user does not already exist
+  await req.uest({
+    method: 'HEAD',
+    url: `/api/users?email=${email}`
+  }).catch(err => {
+    if (err.status === 409) {
+      res.render('signup', {error: 'Email already exist'})
+      return
+    }
 
-It allows you to decouple your app's routes from your API's ones. IOW, your app routes can now consume your API as any client.
+    next(err)
+  })
 
-TODO: schema clients <-> API
+  // 2nd subrequest: create the user
+  const {body: user} = await req.uest({
+    method: 'POST',
+    url: `/api/users`,
+    body: {email, password}
+  }).catch(next)
+
+  res.redirect('/profile')
+});
+```
