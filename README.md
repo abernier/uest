@@ -38,8 +38,9 @@ req.uest(options)
 - `resp` -- the response object, see: [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
 - `err` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
 
-NB: **`resp.body`** holds the JSON response datas
-NB: **`err.status`** holds the response statusCode, for example: `404` or `409`...
+NB1: **`resp.body`** holds the JSON response datas
+
+NB2: **`err.status`** holds the response statusCode, for example: `404` or `409`...
 
 You can also use it with `await`:
 
@@ -98,7 +99,10 @@ Or another example, with `await` elegance:
 app.post('/signup', async (req, res, next) => {
   const {email, password} = req.body
 
+  //
   // 1st subrequest: check user does not already exist
+  //
+
   await req.uest({
     method: 'HEAD',
     url: `/api/users?email=${email}`
@@ -111,7 +115,10 @@ app.post('/signup', async (req, res, next) => {
     next(err)
   })
 
+  //
   // 2nd subrequest: create the user
+  //
+
   const {body: user} = await req.uest({
     method: 'POST',
     url: `/api/users`,
