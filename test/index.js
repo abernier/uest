@@ -73,6 +73,14 @@ tap.afterEach(function (done) {
 	})
 })
 
+// ######   ######## ##    ## ######## ########     ###    ##       
+// ##    ##  ##       ###   ## ##       ##     ##   ## ##   ##       
+// ##        ##       ####  ## ##       ##     ##  ##   ##  ##       
+// ##   #### ######   ## ## ## ######   ########  ##     ## ##       
+// ##    ##  ##       ##  #### ##       ##   ##   ######### ##       
+// ##    ##  ##       ##   ### ##       ##    ##  ##     ## ##       
+//  ######   ######## ##    ## ######## ##     ## ##     ## ######## 
+
 tap.test('error-first callback', t => {
   t.plan(1)
 
@@ -103,14 +111,12 @@ tap.test('err when resp.statusCode > 400', t => {
 
   app.get('/toto', async (req, res, next) => {
     await req.uest({method: 'POST', url: '/tata1'}).catch(er => {
-      console.log('er=', er);
       t.ok(er instanceof Error, 'er should be an error')
       t.ok(er.message === 'Not Found', 'er.message should be resp.statusMessage')
       t.ok(er.status === 404, 'er.status should be resp.statusCode')
     })
 
     await req.uest({method: 'POST', url: '/tata2'}).catch(er => {
-      console.log('er=', er.stack);
       t.ok(er instanceof Error, 'er should always be an error')
       t.ok(er.message === 'Nope', 'er.message should be data.message')
       t.ok(er.status === 501, 'er.status should be data.status')

@@ -1,9 +1,9 @@
 {
   "name": "uest",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "src/index.js",
   "scripts": {
-    "test": "tap --bail -R spec --cov"
+    "test": "tap --bail -R spec"
   },
   "license": "MIT",
   "devDependencies": {
