@@ -27,12 +27,18 @@ Syntax is:
 
 ```
 req.uest(options)
-  .then((resp, data))
-  .catch(err)
+  .then((resp, data) => {})
+  .catch(err => {})
+```
+
+or with error-fisrt callback:
+
+```js
+req.uest(options, (err, resp, data) => {})
 ```
 
 - `options` are the same as [request/request](https://github.com/request/request#requestoptions-callback), with defaults to `json: true` and `baseUrl` to the same as your Express server.
-- `catch` is triggered when an error occurs or `resp.statusCode >= 400`
+- `err` when an error occurs or `resp.statusCode >= 400`
 
 ## Example
 
