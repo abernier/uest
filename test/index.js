@@ -73,7 +73,7 @@ tap.afterEach(function (done) {
 	})
 })
 
-tap.test('general', t => {
+tap.test('error-first callback', t => {
   t.plan(1)
 
   app.get('/toto', (req, res, next) => {
@@ -88,6 +88,44 @@ tap.test('general', t => {
 
   app.post('/tata', (req, res, next) => {
     res.json({ok: 'tata'})
+  })
+
+  request({
+    method: 'GET',
+    uri: `${HOST}/toto`
+  }, function (er, resp, data) {
+    t.end()
+  });
+})
+
+tap.test('err when resp.statusCode > 400', t => {
+  t.plan(6)
+
+  app.get('/toto', async (req, res, next) => {
+    await req.uest({method: 'POST', url: '/tata1'}).catch(er => {
+      console.log('er=', er);
+      t.ok(er instanceof Error, 'er should be an error')
+      t.ok(er.message === 'Not Found', 'er.message should be resp.statusMessage')
+      t.ok(er.status === 404, 'er.status should be resp.statusCode')
+    })
+
+    await req.uest({method: 'POST', url: '/tata2'}).catch(er => {
+      console.log('er=', er.stack);
+      t.ok(er instanceof Error, 'er should always be an error')
+      t.ok(er.message === 'Nope', 'er.message should be data.message')
+      t.ok(er.status === 501, 'er.status should be data.status')
+    })
+
+    res.send()
+  })
+  app.post('/tata1', (req, res, next) => {
+    res.status(404).send();
+  })
+  app.post('/tata2', (req, res, next) => {
+    res.status(500).json({
+      message: 'Nope',
+      status: 501
+    });
   })
 
   request({

@@ -72,14 +72,14 @@ module.exports = function (settings={}) {
           if (er || resp && resp.statusCode >= 400 || data && data.error) {
             const message = data && data.message || resp && resp.statusMessage;
             const status = data && data.status || resp && resp.statusCode;
-            const error = data && data.error;
-            const stack = data && data.stack;
+            // const error = data && data.error;
+            // const stack = data && data.stack;
 
             //console.log('uest cb', require('util').inspect(data));
             er || (er = new Error(message));
             er.status || (er.status = status);
-            er.error || (er.error = error);
-            er.stack || (er.stack = stack);
+            // er.error || (er.error = error);
+            // er.stack || (er.stack = stack);
           }
 
           //
