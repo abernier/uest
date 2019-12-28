@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/abernier/uest.svg?branch=master)](https://travis-ci.org/abernier/uest)
 [![NPM version](https://img.shields.io/npm/v/uest.svg?style=flat)](https://www.npmjs.com/package/uest)
 ![David](https://img.shields.io/david/abernier/uest)
+![Coveralls github](https://img.shields.io/coveralls/github/abernier/uest)
 
 `req.uest` is an Express middleware that allows you, from a given route, to request another route.
 
