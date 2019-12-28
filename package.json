@@ -1,6 +1,6 @@
 {
   "name": "uest",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "src/index.js",
   "scripts": {
     "test": "tap --bail -R spec"
@@ -16,8 +16,8 @@
     "request": "^2.88.0"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/abernier/uest.git"
+    "type": "git",
+    "url": "https://github.com/abernier/uest.git"
   },
   "author": "Antoine BERNIER <antoine.bernier@gmail.com> (http://abernier.name)",
   "keywords": [
