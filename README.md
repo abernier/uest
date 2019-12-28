@@ -32,6 +32,12 @@ req.uest(options)
   .catch(err => {})
 ```
 
+or with await:
+
+```js
+const [resp, data] = req.uest(options).catch(err => {})
+```
+
 or with error-fisrt callback:
 
 ```js
