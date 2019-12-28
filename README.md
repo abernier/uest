@@ -8,23 +8,18 @@
 ## Install
 
 ```
-$ npm install uest
+$ npm i uest
 ```
 
 ```js
 // app.js
 
-const express = express()
 const uest = require('uest')
-
-const app = express();
 
 app.use(uest())
 ```
 
 ## Usage
-
-Syntax is:
 
 ```js
 req.uest(options)
@@ -37,13 +32,13 @@ req.uest(options)
 - `data` -- the JSON response body
 - `err` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
 
-or with await:
+You can also use it with `await`:
 
 ```js
-const [resp, data] = req.uest(options).catch(err => {})
+const [resp, data] = await req.uest(options).catch(err => {})
 ```
 
-or with error-fisrt callback:
+Or with plain-old [error-first callback](https://nodejs.org/api/errors.html#errors_error_first_callbacks):
 
 ```js
 req.uest(options, (err, resp, data) => {})
@@ -60,20 +55,29 @@ app.use('/api', require('./routers/api'));
 //
 
 app.post('/login', (req, res, next) => {
+  const {username, password} = req.body
+
+  //
+  // Our subsequent request to `POST /api/sessions` route
+  //
+
   req.uest({
     method: 'POST',
     url: '/api/sessions',
     body: {username, password}
   })
     .then((resp, data) => {
-      // data holds json response
-      // req.session is up-to-date
+      // `data` holds JSON response
+      console.log('User-session created for', data.user)
 
-      console.log(`Welcome back ${req.session.user.firstname}!`;
-      res.redirect('/profile');
+      // `req.session` is up-to-date
+      console.log(`Welcome back ${req.session.user.firstname}!`
+      
+      res.redirect('/profile')
     })
     .catch(err => {
-      // handle err
+      // handle `err`
+      next(err)
     })
   ;
 });
@@ -81,8 +85,8 @@ app.post('/login', (req, res, next) => {
 
 ## Features
 
-- 🍪 jar: incoming cookies (from `req`) are passed to subsequent `req.uest`s
-- cookies forwarding: cookies set by `req.uest`s responses are forwarded to `res`
+- Initial `req` cookies are passed along to subsequent `req.uest`s
+- Cookies set by `req.uest`s responses are forwarded to `res`
 - `req.session` stay in sync between requests
 
 ## Advantages
