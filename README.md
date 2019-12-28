@@ -33,10 +33,8 @@ req.uest(options)
 ```
 
 - `options` -- are the same as [request/request](https://github.com/request/request#requestoptions-callback), with defaults to `json: true` and `baseUrl` to the same as your Express server.
-
 - `resp` -- the response object, see: [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
 - `data` -- the JSON response body
-
 - `err` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
 
 or with await:
