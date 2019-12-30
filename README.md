@@ -60,7 +60,14 @@ app.post('/login', (req, res, next) => {
     url: '/api/sessions',
     body: {email, password}
   }, (er, resp, body) => {
-    if (er) return next(er);
+    if (er) {
+      // Deal with specific "Forbidden" error
+      if (er.status === 403) {
+        return res.render('login', {error: "Wrong login/password"})
+      }
+
+      return next(er); // for any other error
+    }
 
     console.log('User-session created for', body.user)
 
