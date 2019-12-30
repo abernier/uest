@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/abernier/uest.svg?branch=master)](https://travis-ci.org/abernier/uest)
+[![Build Status](https://github.com/abernier/uest/workflows/ci/cd/badge.svg)](https://github.com/abernier/uest/actions?query=workflow%3Aci%2Fcd)
 [![NPM version](https://img.shields.io/npm/v/uest.svg?style=flat)](https://www.npmjs.com/package/uest)
 ![David](https://img.shields.io/david/abernier/uest)
 [![Coveralls github](https://img.shields.io/coveralls/github/abernier/uest)](https://coveralls.io/github/abernier/uest)
