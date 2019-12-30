@@ -29,30 +29,14 @@ app.use(uest())
 ## Usage
 
 ```js
-req.uest(options)
-  .then(resp => {})
-  .catch(err => {})
+req.uest(options, (er, resp, body) => {})
 ```
 
 - `options` -- are the same as [request/request](https://github.com/request/request#requestoptions-callback), with defaults to `json: true` and `baseUrl` to the same as your Express server.
 - `resp` -- the response object, see: [http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
-- `err` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
-
-NB1: **`resp.body`** holds the JSON response datas
-
-NB2: **`err.status`** holds the response statusCode, for example: `404` or `409`...
-
-You can also use it with `await`:
-
-```js
-const resp = await req.uest(options).catch(err => {})
-```
-
-Or with plain-old [error-first callback](https://nodejs.org/api/errors.html#errors_error_first_callbacks):
-
-```js
-req.uest(options, (err, resp, body) => {})
-```
+  - **`resp.body`** holds the JSON response datas
+- `er` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
+  - **`er.status`** holds the response statusCode, for example: `404` or `409`...
 
 ## Example
 
@@ -75,56 +59,15 @@ app.post('/login', (req, res, next) => {
     method: 'POST',
     url: '/api/sessions',
     body: {email, password}
-  })
-    .then(resp => {
-      // `resp.body` holds JSON response
-      console.log('User-session created for', resp.body.user)
+  }, (er, resp, body) => {
+    if (er) return next(er);
 
-      // `req.session` is up-to-date
-      console.log(`Welcome back ${req.session.user.firstname}!`
+    console.log('User-session created for', body.user)
+
+    // `req.session` is up-to-date
+    console.log(`Welcome back ${req.session.user.firstname}!`
       
-      res.redirect('/profile')
-    })
-    .catch(err => {
-      // handle `err`
-      next(err)
-    })
-  ;
-});
-```
-
-Or another example, with `await` elegance:
-
-```js
-app.post('/signup', async (req, res, next) => {
-  const {email, password} = req.body
-
-  //
-  // 1st subrequest: check user does not already exist
-  //
-
-  await req.uest({
-    method: 'HEAD',
-    url: `/api/users?email=${email}`
-  }).catch(err => {
-    if (err.status === 409) {
-      res.render('signup', {error: 'Email already exist'})
-      return
-    }
-
-    next(err)
+    res.redirect('/profile')
   })
-
-  //
-  // 2nd subrequest: create the user
-  //
-
-  const {body: user} = await req.uest({
-    method: 'POST',
-    url: `/api/users`,
-    body: {email, password}
-  }).catch(next)
-
-  res.redirect('/profile')
 });
 ```
