@@ -1,8 +1,9 @@
 name: Test and Publish to npmjs
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - v*
 
 jobs:
   test:
