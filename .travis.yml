@@ -13,3 +13,4 @@ node_js:
 deploy:
   provider: npm
   edge: true
+  tag: next
