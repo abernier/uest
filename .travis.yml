@@ -12,7 +12,4 @@ node_js:
 
 deploy:
   provider: npm
-  email: "antoine.bernier@gmail.com"
-  api_key: "h86CiRA76sfdOiYwSggG0K8RCp4dSunqonUO1QXPq14J3Wjm56VkkrW2/MFHC0eBDvSyt0IQYLNSf6S4amN/fgMimUBuNTN58Q9hM5Ou7qqdON4y3JtQbAJEenrygTeW5GFYrecSfN2seWQmKUDRYKjxLRAo4DDAiWdYcVXXdM+B2i7Y0/t3sEDfxdDb9zEHDgcnO7YQsK0Y3w0aK5HLDm76cab/mTH1TVjjgV5DxHxNavw6v5+FmRzsDatzRTh2UPH944L7G2+k5bnJC2Q3/ioIFP8ocxOD1ojVBGzl3XyUjuJEdh6kiJ2+VrfB9++5CNlgFal/d6o+ZKNdXjBttpECDkwfoFGwjkWXz3TlM7H+NaK1DpSsXJWU6hqlqEUDhIG1xFXEgJeIiTnndJTm7LIRDw4lsP81VjYjH7UL6MJUevPOPdj9VtFqog/0s01BBI1ImnYRCAF+NkmRdppblAFUDBusPmG1wcL4UL+UhEr7svH/6ic6GCnRnjPm1+6WmjGd5SMZ+ORupQrhCrlk556TzLeeeCh1jWJlE2fRHf0HuA0YSEEvRHJMj8r0I/dJ0f9g/F1ZqttNVATvld1+LUoE1p1noqxFNgHIFo0ideWwnZt0FdqVptXwz4cvqeaIJoUGYHxhlxk6onZL17Z+8IUWVzJJcTZHWxP6Y5Y+ikw="
-  on:
-    branch: master
+  edge: true
