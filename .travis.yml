@@ -10,7 +10,8 @@ node_js:
   - 12
   - 13
 
-deploy:
-  provider: npm
-  edge: true
-  tag: next
+# deploy:
+#   provider: npm
+#   edge: true
+#   on:
+#     tags: true
