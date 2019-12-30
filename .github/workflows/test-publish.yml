@@ -1,9 +1,6 @@
-name: Test and Publish to npmjs
+name: ci/cd
 
-on:
-  push:
-    tags:
-      - v*
+on: [push, pull_request, create] # see: https://developer.github.com/webhooks/
 
 jobs:
   test:
@@ -25,6 +22,8 @@ jobs:
         yarn test
 
   publish-npm:
+    name: Publish on node 13 and ubuntu-latest
+    if: github.event_name == 'create' && github.event.ref_type == 'tag' # see: https://developer.github.com/v3/activity/events/types/#createevent
     needs: test
     runs-on: ubuntu-latest
     steps:
