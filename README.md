@@ -62,8 +62,7 @@ app.post('/login', (req, res, next) => {
   }, (er, resp, body) => {
     if (er) return next(er);
 
-    // `resp.body` holds JSON response
-    console.log('User-session created for', resp.body.user)
+    console.log('User-session created for', body.user)
 
     // `req.session` is up-to-date
     console.log(`Welcome back ${req.session.user.firstname}!`
