@@ -9,7 +9,7 @@
   "devDependencies": {
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "tap": "^14.10.5"
+    "tap": "^14.10.6"
   },
   "dependencies": {
     "lodash.defaults": "^4.2.0",
