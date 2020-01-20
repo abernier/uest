@@ -7,7 +7,7 @@
 
 Features are:
 - Initial `req` cookies are passed along to subsequent `req.uest`s
-- Cookies set by `req.uest`s responses are forwarded to `res`
+- Cookies set by `req.uest`s responses are forwarded to initial `res`
 - `req.session` stay in sync between requests
 
 It allows you to decouple your app's routes from your API's ones. IOW, your app routes can now consume your API as any client.
