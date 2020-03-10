@@ -20,6 +20,8 @@ jobs:
       run: |
         yarn install
         yarn test
+      env:
+        COVERALLS_REPO_TOKEN: ${{secrets.COVERALLS_REPO_TOKEN}}
 
   publish-npm:
     name: Publish on node 13 and ubuntu-latest
