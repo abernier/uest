@@ -38,6 +38,12 @@ req.uest(options, (er, resp, body) => {})
 - `er` -- when an error occurs or `resp.statusCode >= 400`, see: [http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest)
   - **`er.status`** holds the response statusCode, for example: `404` or `409`...
 
+It also supports `await`:
+
+```
+const [resp, body] = await req.uest(options)
+```
+
 ## Example
 
 ```js
